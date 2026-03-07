@@ -71,7 +71,7 @@ export default function DashboardGrafikPage() {
                                         cy="18"
                                         r="15.5"
                                         fill="none"
-                                        stroke="#e5e7eb"
+                                        stroke="#dfdede81"
                                         strokeWidth="3"
                                     />
                                     <circle
