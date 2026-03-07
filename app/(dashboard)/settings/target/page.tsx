@@ -108,26 +108,28 @@ export default function SettingsTargetPage() {
         <div className="space-y-6 animate-in fade-in duration-500">
             {/* Hero */}
             <div
-                className="relative rounded-2xl p-8 overflow-hidden bg-gradient-to-r from-[#0f2d5e] to-[#1a4a8a]"
+                className="relative rounded-xl sm:rounded-2xl p-5 sm:p-8 overflow-hidden bg-gradient-to-r from-[#0f2d5e] to-[#1a4a8a]"
             >
-                <div className="relative z-10">
-                    <p className="text-blue-200/80 text-sm mb-2">Setting › Tambah Target</p>
-                    <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
-                        Nilai Anggaran
-                    </h1>
-                    <p className="text-blue-200/70 text-sm max-w-lg">
-                        Kelola nilai anggaran target per tahun secara efisien dan transparan
-                        untuk Kabupaten Klaten.
-                    </p>
-                </div>
-                <div className="absolute right-8 top-1/2 -translate-y-1/2">
-                    <Button
-                        onClick={openAdd}
-                        className="bg-brand-gold hover:bg-amber-500 text-white font-semibold shadow-lg shadow-amber-500/25 gap-2"
-                    >
-                        <Plus className="w-4 h-4" />
-                        Tambah Nilai Anggaran
-                    </Button>
+                <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <p className="text-blue-200/80 text-xs sm:text-sm mb-2">Setting › Tambah Target</p>
+                        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">
+                            Nilai Anggaran
+                        </h1>
+                        <p className="text-blue-200/70 text-xs sm:text-sm max-w-lg">
+                            Kelola nilai anggaran target per tahun secara efisien dan transparan
+                            untuk Kabupaten Klaten.
+                        </p>
+                    </div>
+                    <div className="shrink-0">
+                        <Button
+                            onClick={openAdd}
+                            className="bg-brand-gold hover:bg-amber-500 text-white font-semibold shadow-lg shadow-amber-500/25 gap-2 w-full sm:w-auto"
+                        >
+                            <Plus className="w-4 h-4" />
+                            Tambah Nilai Anggaran
+                        </Button>
+                    </div>
                 </div>
             </div>
 
@@ -256,8 +258,8 @@ export default function SettingsTargetPage() {
                                     key={p}
                                     onClick={() => setPage(p)}
                                     className={`px-2.5 py-1.5 text-xs rounded-md ${page === p
-                                            ? "bg-brand-blue text-white"
-                                            : "text-gray-500 hover:bg-gray-50 border border-gray-200"
+                                        ? "bg-brand-blue text-white"
+                                        : "text-gray-500 hover:bg-gray-50 border border-gray-200"
                                         }`}
                                 >
                                     {p}

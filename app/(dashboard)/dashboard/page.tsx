@@ -9,7 +9,6 @@ import { TopContributors } from "@/components/charts/top-contributors";
 import { RincianRealisasiTable } from "@/components/tables/rincian-realisasi-table";
 import { padSummary } from "@/lib/data";
 import { formatCompact } from "@/lib/format";
-import { Target, TrendingUp, Award } from "lucide-react";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -46,25 +45,27 @@ export default function DashboardGrafikPage() {
                     <KPICard
                         label="Total Target"
                         value={formatCompact(padSummary.totalTarget)}
-                        icon={<Target className="w-5 h-5" />}
+                        icon="/target.svg"
                         subtitle="↑ 4,2% vs Tahun Lalu"
                         subtitleColor="text-green-500"
                         href="/dashboard/detail"
+                        className="border-l-4 border-brand-blue"
                     />
                     <KPICard
                         label="Total Realisasi"
                         value={formatCompact(padSummary.realisasiSdHariIni)}
-                        icon={<TrendingUp className="w-5 h-5" />}
+                        icon="/realisasi.svg"
                         subtitle={`Data Per: ${new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}`}
                         subtitleColor="text-gray-400"
                         href="/dashboard/detail"
+                        className="border-l-4 border-green-500"
                     />
                     <KPICard
                         label="Capaian"
                         value={`${capaian}%`}
-                        icon={
-                            <div className="relative w-10 h-10">
-                                <svg viewBox="0 0 36 36" className="w-10 h-10 -rotate-90">
+                        iconReactNode={
+                            <div className="relative w-12 h-12">
+                                <svg viewBox="0 0 36 36" className="w-12 h-12 -rotate-90">
                                     <circle
                                         cx="18"
                                         cy="18"
@@ -78,20 +79,21 @@ export default function DashboardGrafikPage() {
                                         cy="18"
                                         r="15.5"
                                         fill="none"
-                                        stroke="#10b981"
+                                        stroke="#FBBF24"
                                         strokeWidth="3"
                                         strokeDasharray={`${parseFloat(capaian)} ${100 - parseFloat(capaian)}`}
                                         strokeLinecap="round"
                                     />
                                 </svg>
-                                <span className="absolute inset-0 flex items-center justify-center text-[8px] font-bold text-green-600">
+                                <span className="absolute inset-0 flex items-center justify-center text-[8px] font-bold text-[#FBBF24]">
                                     {Math.round(parseFloat(capaian))}%
                                 </span>
                             </div>
                         }
                         subtitle="On-Track Sasaran Tahunan"
-                        subtitleColor="text-green-500"
+                        subtitleColor="text-[#FBBF24]"
                         href="/dashboard/detail"
+                        className="border-l-4 border-yellow-500"
                     />
                 </div>
             </Suspense>
@@ -102,7 +104,7 @@ export default function DashboardGrafikPage() {
                     <div>
                         <DonutChart />
                     </div>
-                    <div className="col-span-2">
+                    <div className="lg:col-span-2">
                         <GroupedBarChart />
                     </div>
                 </div>

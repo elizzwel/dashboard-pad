@@ -11,6 +11,11 @@ interface PADStore {
     addTarget: (target: TargetAnggaran) => void;
     updateTarget: (id: string, data: Partial<TargetAnggaran>) => void;
     deleteTarget: (id: string) => void;
+    sidebarCollapsed: boolean;
+    toggleSidebar: () => void;
+    setSidebarCollapsed: (collapsed: boolean) => void;
+    sidebarMobileOpen: boolean;
+    setSidebarMobileOpen: (open: boolean) => void;
 }
 
 export const usePADStore = create<PADStore>((set) => ({
@@ -27,4 +32,10 @@ export const usePADStore = create<PADStore>((set) => ({
         })),
     deleteTarget: (id) =>
         set((state) => ({ targets: state.targets.filter((t) => t.id !== id) })),
+    sidebarCollapsed: false,
+    toggleSidebar: () =>
+        set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+    setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
+    sidebarMobileOpen: false,
+    setSidebarMobileOpen: (open) => set({ sidebarMobileOpen: open }),
 }));

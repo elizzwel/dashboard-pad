@@ -10,7 +10,7 @@ import {
 
 const data = [
     { name: "Realisasi", value: 63, color: "#3b82f6" },
-    { name: "Belum Terealisasi", value: 37, color: "#e5e7eb" },
+    { name: "Belum Terealisasi", value: 37, color: "#FBBF24" },
 ];
 
 export function DonutChart() {
@@ -52,14 +52,20 @@ export function DonutChart() {
                     <span className="text-2xl font-bold text-gray-900">2025</span>
                 </div>
             </div>
+            {/* <div className="flex items-center justify-center gap-6">
+                <div className="grid grid-rows-2 items-center gap-2">
+                    <span className="text-xs text-gray-600">Total Target</span>
+                    <span className="text-xs text-gray-600">Rp 1.234.567.890</span>
+                </div>
+            </div> */}
             <div className="flex items-center justify-center gap-6 mt-4">
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-brand-blue" />
-                    <span className="text-xs text-gray-600">63% Total Realisasi</span>
+                    <span className="text-xs text-gray-600">{data[0].value}% Total Realisasi</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-gray-200" />
-                    <span className="text-xs text-gray-600">37% Belum Terealisasi</span>
+                    <div className="w-3 h-3 rounded-full bg-[#FBBF24]" />
+                    <span className="text-xs text-gray-600">{data[1].value}% Belum Terealisasi</span>
                 </div>
             </div>
         </div>

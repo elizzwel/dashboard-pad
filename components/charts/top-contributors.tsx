@@ -24,7 +24,7 @@ export function TopContributors() {
                             key={i}
                             className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 transition-colors"
                         >
-                            <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-lg">
+                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-lg">
                                 {item.icon}
                             </div>
                             <div className="flex-1 min-w-0">
@@ -40,7 +40,7 @@ export function TopContributors() {
                                 </div>
                                 <Progress
                                     value={item.persentaseTarget}
-                                    className="h-1.5 bg-gray-100"
+                                    className="h-1.5 bg-yellow-500"
                                 />
                                 <div className="flex items-center justify-between mt-1">
                                     <span className="text-[10px] text-gray-400">
@@ -89,7 +89,7 @@ export function TopContributors() {
                                 </div>
                                 <Progress
                                     value={item.persentaseRealisasi}
-                                    className="h-1.5 bg-gray-100"
+                                    className="h-1.5 bg-yellow-500"
                                 />
                                 <div className="flex items-center justify-between mt-1">
                                     <span className="text-[10px] text-gray-400">

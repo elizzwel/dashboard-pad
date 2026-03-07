@@ -2,12 +2,14 @@
 
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import type { ReactNode } from "react";
 
 interface KPICardProps {
     label: string;
     value: string;
-    icon?: ReactNode;
+    icon?: string;
+    iconReactNode?: ReactNode;
     subtitle?: string;
     subtitleColor?: string;
     highlight?: boolean;
@@ -19,6 +21,7 @@ export function KPICard({
     label,
     value,
     icon,
+    iconReactNode,
     subtitle,
     subtitleColor,
     highlight = false,
@@ -42,7 +45,7 @@ export function KPICard({
             className={cn(
                 "bg-white rounded-xl border border-gray-100 p-5 shadow-sm transition-all duration-300",
                 href &&
-                "cursor-pointer hover:shadow-lg hover:-translate-y-0.5 hover:border-brand-blue/30 active:scale-[0.98]",
+                "cursor-pointer hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98]",
                 !href && "hover:shadow-md",
                 highlight && "ring-2 ring-brand-blue/20",
                 className
@@ -73,7 +76,14 @@ export function KPICard({
                     )}
                 </div>
                 {icon && (
-                    <div className="text-gray-300 mt-1">{icon}</div>
+                    <div className="text-gray-300 mt-2">
+                        <Image src={icon} alt="icon" width={48} height={48} />
+                    </div>
+                )}
+                {iconReactNode && (
+                    <div className="text-gray-300 mt-2">
+                        {iconReactNode}
+                    </div>
                 )}
             </div>
         </div>

@@ -20,10 +20,10 @@ export function formatCompact(value: number): string {
         return `${sign}Rp ${(abs / 1e12).toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} T`;
     }
     if (abs >= 1e9) {
-        return `${sign}Rp ${(abs / 1e9).toLocaleString("id-ID", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} B`;
+        return `${sign}Rp ${(abs / 1e9).toLocaleString("id-ID", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} M`;
     }
     if (abs >= 1e6) {
-        return `${sign}Rp ${(abs / 1e6).toLocaleString("id-ID", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} M`;
+        return `${sign}Rp ${(abs / 1e6).toLocaleString("id-ID", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} Juta`;
     }
     return formatCurrency(value);
 }

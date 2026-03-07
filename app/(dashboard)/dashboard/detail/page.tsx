@@ -52,7 +52,7 @@ export default function DashboardDetailPage() {
                             : "text-gray-500 hover:text-gray-700"
                     )}
                 >
-                    Table View <ChevronDown className="w-3.5 h-3.5" />
+                    Table View
                 </button>
             </div>
 
