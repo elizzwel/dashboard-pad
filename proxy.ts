@@ -66,11 +66,12 @@ function redirectToLogin(request: NextRequest): NextResponse {
 export const config = {
   matcher: [
     /*
-     * Match all requests except:
+     * Match all requests except for:
      * - _next/static (static files)
-     * - _next/image  (image optimization)
-     * - favicon.ico
+     * - _next/image (image optimization APIs)
+     * - favicon.ico (favicon file)
+     * - public files with extensions (e.g. .png, .svg, .jpg, .webp)
      */
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
