@@ -25,6 +25,7 @@ export default function AuthLayout({
               width={80}
               height={80}
               className="h-24 w-auto object-contain mb-8 drop-shadow-2xl"
+              unoptimized
             />
             <h1 className="text-4xl font-bold tracking-tight mb-4">
                Dashboard PAD

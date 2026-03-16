@@ -53,6 +53,7 @@ export function LoginForm() {
           width={80}
           height={80}
           className="h-24 w-auto object-contain drop-shadow-md"
+          unoptimized
         />
         <div className="text-center">
           <h1 className="text-2xl font-extrabold text-brand-navy tracking-tight">Dashboard PAD</h1>

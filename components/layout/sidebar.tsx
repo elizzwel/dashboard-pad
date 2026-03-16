@@ -68,6 +68,7 @@ export function Sidebar() {
                     width={sidebarCollapsed ? 40 : 60}
                     height={sidebarCollapsed ? 40 : 60}
                     className="rounded-full shrink-0 transition-all duration-300"
+                    unoptimized
                 />
                 {!sidebarCollapsed && (
                     <div className="overflow-hidden">
@@ -171,6 +172,7 @@ export function Sidebar() {
                             width={44}
                             height={44}
                             className="rounded-full"
+                            unoptimized
                         />
                         <div>
                             <h1 className="font-bold text-base leading-tight">
