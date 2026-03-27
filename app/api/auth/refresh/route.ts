@@ -4,6 +4,10 @@ import { verifyRefreshToken, signAccessToken, signRefreshToken } from "@/lib/aut
 import { createHash } from "crypto";
 import type { Role } from "@/lib/auth/roles";
 
+// Explicit types to fix supabase-js 'never' inference
+type RefreshTokenRow = { id: number; is_revoked: boolean };
+type UserRow = { id: string; username: string; nama: string; role: string; is_active: boolean };
+
 const cookieBase = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
@@ -31,12 +35,13 @@ export async function POST(req: NextRequest) {
   const oldHash = createHash("sha256").update(oldRefreshToken).digest("hex");
 
   // Check it exists and is not revoked
-  const { data: storedToken } = await db
+  const { data: storedTokenRaw } = await db
     .from("refresh_tokens")
     .select("id, is_revoked")
     .eq("user_id", payload.sub!)
     .eq("token_hash", oldHash)
     .single();
+  const storedToken = storedTokenRaw as RefreshTokenRow | null;
 
   if (!storedToken || storedToken.is_revoked) {
     return NextResponse.json({ error: "Token revoked" }, { status: 401 });
@@ -45,15 +50,16 @@ export async function POST(req: NextRequest) {
   // Revoke old token (one-time use)
   await db
     .from("refresh_tokens")
-    .update({ is_revoked: true })
+    .update({ is_revoked: true } as never)
     .eq("id", storedToken.id);
 
   // Fetch fresh user data
-  const { data: user } = await db
+  const { data: userRaw } = await db
     .from("users")
     .select("id, username, nama, role, is_active")
     .eq("id", payload.sub!)
     .single();
+  const user = userRaw as UserRow | null;
 
   if (!user || !user.is_active) {
     return NextResponse.json({ error: "User not found or inactive" }, { status: 401 });
@@ -77,7 +83,7 @@ export async function POST(req: NextRequest) {
     expires_at: expiresAt,
     ip_address: ip,
     user_agent: req.headers.get("user-agent"),
-  });
+  } as never);
 
   const response = NextResponse.json({ success: true });
   response.cookies.set("access_token", newAccessToken, {

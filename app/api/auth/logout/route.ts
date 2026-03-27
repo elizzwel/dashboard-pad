@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
       // Revoke refresh token in DB
       await db
         .from("refresh_tokens")
-        .update({ is_revoked: true })
+        .update({ is_revoked: true } as never)
         .eq("user_id", payload.sub!)
         .eq("token_hash", tokenHash);
 
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
         user_id: payload.sub!,
         action: "LOGOUT",
         ip_address: ip,
-      });
+      } as never);
     } catch {
       // Token invalid — still clear cookies, just skip DB update
     }

@@ -5,6 +5,16 @@ import { signAccessToken, signRefreshToken } from "@/lib/auth/jwt";
 import { createHash } from "crypto";
 import type { Role } from "@/lib/auth/roles";
 
+// Explicit types to fix supabase-js 'never' inference
+type UserRow = {
+  id: string;
+  username: string;
+  password: string;
+  nama: string;
+  role: string;
+  is_active: boolean;
+};
+
 const cookieBase = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
@@ -55,28 +65,24 @@ export async function POST(req: NextRequest) {
   }
 
   // Look up user
-  const { data: user } = await db
+  const { data: userData } = await db
     .from("users")
     .select("id, username, password, nama, role, is_active")
     .eq("username", username)
     .single();
+  const user = userData as UserRow | null;
 
   const loginSuccess =
     user && user.is_active && (await comparePassword(password, user.password));
 
-  console.log('loginSuccess', loginSuccess);
-  console.log('user', user);
-  console.log('password', password);
-  console.log('username', username);
-  
   // Log attempt regardless of result
   await db.from("login_attempts").insert({
     ip_address: ip,
     username,
     success: Boolean(loginSuccess),
-  });
+  } as never);
 
-  if (!loginSuccess) {
+  if (!loginSuccess || !user) {
     return NextResponse.json(
       { error: "Username atau password salah" },
       { status: 401 }
@@ -101,14 +107,14 @@ export async function POST(req: NextRequest) {
     expires_at: expiresAt,
     ip_address: ip,
     user_agent: req.headers.get("user-agent"),
-  });
+  } as never);
 
   // Audit log
   await db.from("audit_logs").insert({
     user_id: user.id,
     action: "LOGIN",
     ip_address: ip,
-  });
+  } as never);
 
   const response = NextResponse.json({
     user: {

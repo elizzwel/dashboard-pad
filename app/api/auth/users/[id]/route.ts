@@ -1,9 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
-import type { Database } from "@/lib/supabase/types";
 import { withRole } from "@/lib/auth/middleware";
 import { hashPassword } from "@/lib/auth/password";
 import { z } from "zod";
+
+type UserRow = { id: string; username: string; nama: string; role: string; is_active: boolean; updated_at: string };
 
 const updateUserSchema = z.object({
   nama: z.string().min(1).max(100).optional(),
@@ -46,12 +47,13 @@ export const PUT = withRole("super_admin")(
       return NextResponse.json({ error: "No fields to update" }, { status: 400 });
     }
 
-    const { data, error } = await db
+    const { data: updatedRaw, error } = await db
       .from("users")
-      .update(updates as Database["public"]["Tables"]["users"]["Update"])
+      .update(updates as never)
       .eq("id", id)
       .select("id, username, nama, role, is_active, updated_at")
       .single();
+    const updated = updatedRaw as UserRow | null;
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
@@ -64,9 +66,9 @@ export const PUT = withRole("super_admin")(
       resource_id: id,
       detail: { fields: Object.keys(updates) },
       ip_address: ip,
-    });
+    } as never);
 
-    return NextResponse.json({ user: data });
+    return NextResponse.json({ user: updated });
   }
 );
 
@@ -88,7 +90,7 @@ export const DELETE = withRole("super_admin")(
     // Soft delete — deactivate instead of hard delete
     const { error } = await db
       .from("users")
-      .update({ is_active: false })
+      .update({ is_active: false } as never)
       .eq("id", id);
 
     if (error) {
@@ -98,7 +100,7 @@ export const DELETE = withRole("super_admin")(
     // Revoke all refresh tokens for deactivated user
     await db
       .from("refresh_tokens")
-      .update({ is_revoked: true })
+      .update({ is_revoked: true } as never)
       .eq("user_id", id);
 
     await db.from("audit_logs").insert({
@@ -107,7 +109,7 @@ export const DELETE = withRole("super_admin")(
       resource: "user",
       resource_id: id,
       ip_address: ip,
-    });
+    } as never);
 
     return NextResponse.json({ success: true });
   }

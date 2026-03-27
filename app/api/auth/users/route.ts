@@ -4,6 +4,8 @@ import { withRole } from "@/lib/auth/middleware";
 import { hashPassword } from "@/lib/auth/password";
 import { z } from "zod";
 
+type UserRow = { id: string; username: string; nama: string; role: string; is_active: boolean; created_at: string };
+
 const createUserSchema = z.object({
   username: z.string().min(3).max(50),
   password: z.string().min(8),
@@ -48,11 +50,12 @@ export const POST = withRole("super_admin")(async (req, { user }) => {
   const { username, password, nama, role } = parsed.data;
   const hashed = await hashPassword(password);
 
-  const { data, error } = await db
+  const { data: newUserRaw, error } = await db
     .from("users")
-    .insert({ username, password: hashed, nama, role })
+    .insert({ username, password: hashed, nama, role } as never)
     .select("id, username, nama, role, is_active, created_at")
     .single();
+  const newUser = newUserRaw as UserRow | null;
 
   if (error) {
     const isDuplicate = error.code === "23505";
@@ -66,10 +69,10 @@ export const POST = withRole("super_admin")(async (req, { user }) => {
     user_id: user.sub,
     action: "CREATE_USER",
     resource: "user",
-    resource_id: data.id,
+    resource_id: newUser?.id,
     detail: { username, role },
     ip_address: ip,
-  });
+  } as never);
 
-  return NextResponse.json({ user: data }, { status: 201 });
+  return NextResponse.json({ user: newUser }, { status: 201 });
 });
