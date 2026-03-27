@@ -1,17 +1,22 @@
 "use client";
 
-import { Suspense } from "react";
 import { HeroBanner } from "@/components/shared/hero-banner";
 import { KPICard } from "@/components/shared/kpi-card";
 import { TrendAreaChart } from "@/components/charts/trend-area-chart";
 import { VarianceBarChart } from "@/components/charts/variance-bar-chart";
 import { PerformersChart } from "@/components/charts/performers-chart";
 import { DetailRealisasiTable } from "@/components/tables/detail-realisasi-table";
-import { analyticsSummary } from "@/lib/data";
-import { formatCompact, formatPercent, getStatusLabel } from "@/lib/format";
+import { formatCompact, formatPercent } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 import { StatusBadge } from "@/components/shared/status-badge";
+import {
+    useAnalyticsSummary,
+    useTrenAkumulasi,
+    useVarianceKelompok,
+    useTopPerformers,
+    useBottomPerformers,
+    useDetailMataAnggaran,
+} from "@/lib/hooks/use-pad";
 
 function KPISkeleton() {
     return (
@@ -23,13 +28,36 @@ function KPISkeleton() {
     );
 }
 
-function ChartSkeleton() {
-    return <Skeleton className="h-80 rounded-xl" />;
+function mapStatusToVariant(label: string): "on-track" | "approaching" | "below-target" | "critical" {
+    switch (label) {
+        case "AMAN":
+            return "on-track";
+        case "WASPADA":
+            return "approaching";
+        case "KRITIS":
+            return "critical";
+        default:
+            return "below-target";
+    }
 }
 
 export default function AnalyticsPage() {
-    const { target, realisasi, achievement, variance, proyeksi, status } =
-        analyticsSummary;
+    const { data: summary, isLoading: summaryLoading } = useAnalyticsSummary();
+    const { data: trenData, isLoading: trenLoading } = useTrenAkumulasi();
+    const { data: varianceData, isLoading: varianceLoading } = useVarianceKelompok();
+    const { data: topData, isLoading: topLoading } = useTopPerformers();
+    const { data: bottomData, isLoading: bottomLoading } = useBottomPerformers();
+    const { data: detailData, isLoading: detailLoading } = useDetailMataAnggaran();
+
+    const target = Number(summary?.total_target ?? 0);
+    const realisasi = Number(summary?.total_realisasi ?? 0);
+    const achievement = Number(summary?.achievement_percent ?? 0);
+    const variance = Number(summary?.variance_nominal ?? 0);
+    const proyeksi = Number(summary?.proyeksi ?? 0);
+    const statusLabel = summary?.status_label ?? "—";
+    const statusNote = summary?.status_note ?? "";
+    const growthTarget = summary?.growth_target;
+    const growthRealisasi = summary?.growth_realisasi;
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
@@ -41,18 +69,20 @@ export default function AnalyticsPage() {
             />
 
             {/* KPI Row - 6 cards */}
-            <Suspense fallback={<KPISkeleton />}>
+            {summaryLoading ? (
+                <KPISkeleton />
+            ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     <KPICard
                         label="Target"
                         value={formatCompact(target)}
-                        subtitle="↑ 8%"
+                        subtitle={growthTarget != null ? `↑ ${growthTarget}%` : "—"}
                         subtitleColor="text-green-500"
                     />
                     <KPICard
                         label="Realisasi"
                         value={formatCompact(realisasi)}
-                        subtitle="↑ 5%"
+                        subtitle={growthRealisasi != null ? `↑ ${growthRealisasi}%` : "—"}
                         subtitleColor="text-green-500"
                     />
                     <KPICard
@@ -62,12 +92,12 @@ export default function AnalyticsPage() {
                     <KPICard
                         label="Variance"
                         value={formatCompact(variance)}
-                        subtitle="↓ 98.9%"
-                        subtitleColor="text-red-500"
+                        subtitle={summary?.variance_percent != null ? `${Number(summary.variance_percent) >= 0 ? "↑" : "↓"} ${Math.abs(Number(summary.variance_percent))}%` : "—"}
+                        subtitleColor={variance < 0 ? "text-red-500" : "text-green-500"}
                     />
                     <KPICard
                         label="Proyeksi"
-                        value={proyeksi !== null ? formatCompact(proyeksi) : "0"}
+                        value={proyeksi !== 0 ? formatCompact(proyeksi) : "0"}
                         subtitle="Belum ada estimasi"
                         subtitleColor="text-gray-400"
                     />
@@ -76,34 +106,32 @@ export default function AnalyticsPage() {
                             Status
                         </p>
                         <div className="mt-2">
-                            <StatusBadge status={status} />
+                            <StatusBadge status={mapStatusToVariant(statusLabel)} />
                         </div>
                         <p className="text-xs text-red-500 mt-2 font-medium">
-                            Memerlukan aksi segera
+                            {statusNote}
                         </p>
                     </div>
                 </div>
-            </Suspense>
+            )}
 
             {/* Trend + Variance row */}
-            <Suspense fallback={<ChartSkeleton />}>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2">
-                        <TrendAreaChart />
-                    </div>
-                    <VarianceBarChart />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                    <TrendAreaChart data={trenData} isLoading={trenLoading} />
                 </div>
-            </Suspense>
+                <VarianceBarChart data={varianceData} isLoading={varianceLoading} />
+            </div>
 
             {/* Top/Bottom performers */}
-            <Suspense fallback={<ChartSkeleton />}>
-                <PerformersChart />
-            </Suspense>
+            <PerformersChart
+                topData={topData}
+                bottomData={bottomData}
+                isLoading={topLoading || bottomLoading}
+            />
 
             {/* Detail Table */}
-            <Suspense fallback={<ChartSkeleton />}>
-                <DetailRealisasiTable />
-            </Suspense>
+            <DetailRealisasiTable data={detailData} isLoading={detailLoading} />
         </div>
     );
 }

@@ -19,7 +19,7 @@ interface PADStore {
 }
 
 export const usePADStore = create<PADStore>((set) => ({
-    tahun: 2024,
+    tahun: 2026,
     setTahun: (tahun) => set({ tahun }),
     viewMode: "table",
     setViewMode: (viewMode) => set({ viewMode }),

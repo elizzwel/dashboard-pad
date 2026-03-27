@@ -1,17 +1,41 @@
 "use client";
 
 import { formatCurrency } from "@/lib/format";
-import { rincianRealisasi } from "@/lib/data";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Download, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import type { RincianRealisasi } from "@/lib/types/pad";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export function RincianRealisasiTable() {
+function mapStatus(status: string): "on-track" | "approaching" | "below-target" | "critical" {
+    switch (status) {
+        case "SESUAI TARGET":
+            return "on-track";
+        case "MENDEKATI":
+            return "approaching";
+        case "DI BAWAH TARGET":
+            return "below-target";
+        default:
+            return "critical";
+    }
+}
+
+interface RincianRealisasiTableProps {
+    data?: RincianRealisasi[];
+    isLoading?: boolean;
+}
+
+export function RincianRealisasiTable({ data, isLoading }: RincianRealisasiTableProps) {
     const [page, setPage] = useState(1);
     const perPage = 5;
-    const totalPages = Math.ceil(rincianRealisasi.length / perPage);
-    const shown = rincianRealisasi.slice((page - 1) * perPage, page * perPage);
+
+    if (isLoading || !data) {
+        return <Skeleton className="h-[400px] rounded-xl" />;
+    }
+
+    const totalPages = Math.ceil(data.length / perPage);
+    const shown = data.slice((page - 1) * perPage, page * perPage);
 
     return (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
@@ -59,21 +83,21 @@ export function RincianRealisasiTable() {
                                 className="border-t border-gray-50 hover:bg-blue-50/30 transition-colors"
                             >
                                 <td className="px-6 py-4 text-sm font-medium text-gray-800">
-                                    {item.nama}
+                                    {item.nama_sektor}
                                 </td>
                                 <td className="px-6 py-4 text-sm text-gray-600 text-right font-mono">
-                                    {formatCurrency(item.target)}
+                                    {formatCurrency(Number(item.target))}
                                 </td>
                                 <td className="px-6 py-4 text-sm text-gray-600 text-right font-mono">
-                                    {formatCurrency(item.realisasi)}
+                                    {formatCurrency(Number(item.realisasi))}
                                 </td>
                                 <td className="px-6 py-4 text-sm text-center">
                                     <span className="text-brand-blue font-semibold">
-                                        {item.persentase.toFixed(1)}%
+                                        {Number(item.persentase).toFixed(1)}%
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 text-center">
-                                    <StatusBadge status={item.status} />
+                                    <StatusBadge status={mapStatus(item.status)} />
                                 </td>
                             </tr>
                         ))}
@@ -84,7 +108,7 @@ export function RincianRealisasiTable() {
             {/* Pagination */}
             <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100">
                 <p className="text-xs text-gray-500">
-                    Menampilkan {shown.length} dari {rincianRealisasi.length} Sektor
+                    Menampilkan {shown.length} dari {data.length} Sektor
                 </p>
                 <div className="flex items-center gap-1">
                     <button

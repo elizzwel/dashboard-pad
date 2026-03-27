@@ -7,10 +7,17 @@ import { GroupedBarChart } from "@/components/charts/grouped-bar-chart";
 import { MultiYearBarChart } from "@/components/charts/multi-year-bar-chart";
 import { TopContributors } from "@/components/charts/top-contributors";
 import { RincianRealisasiTable } from "@/components/tables/rincian-realisasi-table";
-import { padSummary } from "@/lib/data";
 import { formatCompact } from "@/lib/format";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+    useDashboardSummary,
+    usePieRealisasi,
+    useRealisasi5Tahun,
+    useTopKontributorNominal,
+    useTopKontributorPersen,
+    useRincianRealisasi,
+} from "@/lib/hooks/use-pad";
 
 function KPISkeleton() {
     return (
@@ -27,8 +34,17 @@ function ChartSkeleton() {
 }
 
 export default function DashboardGrafikPage() {
-    const capaian =
-        ((padSummary.realisasiSdHariIni / padSummary.totalTarget) * 100).toFixed(1);
+    const { data: summary, isLoading: summaryLoading } = useDashboardSummary();
+    const { data: pieData, isLoading: pieLoading } = usePieRealisasi();
+    const { data: multiYearData, isLoading: multiYearLoading } = useRealisasi5Tahun();
+    const { data: topNominal, isLoading: topNominalLoading } = useTopKontributorNominal();
+    const { data: topPersen, isLoading: topPersenLoading } = useTopKontributorPersen();
+    const { data: rincianData, isLoading: rincianLoading } = useRincianRealisasi();
+
+    const totalTarget = Number(summary?.total_target ?? 0);
+    const totalRealisasi = Number(summary?.total_realisasi ?? 0);
+    const capaian = Number(summary?.persentase_capaian ?? 0).toFixed(1);
+    const growthTarget = summary?.growth_target_persen;
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
@@ -40,22 +56,24 @@ export default function DashboardGrafikPage() {
             />
 
             {/* KPI Row */}
-            <Suspense fallback={<KPISkeleton />}>
+            {summaryLoading ? (
+                <KPISkeleton />
+            ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <KPICard
                         label="Total Target"
-                        value={formatCompact(padSummary.totalTarget)}
+                        value={formatCompact(totalTarget)}
                         icon="/target.svg"
-                        subtitle="↑ 4,2% vs Tahun Lalu"
+                        subtitle={growthTarget != null ? `↑ ${growthTarget}% vs Tahun Lalu` : "—"}
                         subtitleColor="text-green-500"
                         href="/dashboard/detail"
                         className="border-l-4 border-brand-blue"
                     />
                     <KPICard
                         label="Total Realisasi"
-                        value={formatCompact(padSummary.realisasiSdHariIni)}
+                        value={formatCompact(totalRealisasi)}
                         icon="/realisasi.svg"
-                        subtitle={`Data Per: ${new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}`}
+                        subtitle={`Data Per: ${summary?.data_per_tanggal ? new Date(summary.data_per_tanggal).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }) : "—"}`}
                         subtitleColor="text-gray-400"
                         href="/dashboard/detail"
                         className="border-l-4 border-green-500"
@@ -96,34 +114,30 @@ export default function DashboardGrafikPage() {
                         className="border-l-4 border-yellow-500"
                     />
                 </div>
-            </Suspense>
+            )}
 
             {/* Charts Row 1 */}
-            <Suspense fallback={<ChartSkeleton />}>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div>
-                        <DonutChart />
-                    </div>
-                    <div className="lg:col-span-2">
-                        <GroupedBarChart />
-                    </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+                <div className="h-full">
+                    <DonutChart data={pieData} isLoading={pieLoading} />
                 </div>
-            </Suspense>
+                <div className="lg:col-span-2 h-full">
+                    <GroupedBarChart />
+                </div>
+            </div>
 
             {/* Charts Row 2 */}
-            <Suspense fallback={<ChartSkeleton />}>
-                <MultiYearBarChart />
-            </Suspense>
+            <MultiYearBarChart data={multiYearData} isLoading={multiYearLoading} />
 
             {/* Top Contributors */}
-            <Suspense fallback={<ChartSkeleton />}>
-                <TopContributors />
-            </Suspense>
+            <TopContributors
+                nominalData={topNominal}
+                persenData={topPersen}
+                isLoading={topNominalLoading || topPersenLoading}
+            />
 
             {/* Rincian Realisasi Table */}
-            <Suspense fallback={<ChartSkeleton />}>
-                <RincianRealisasiTable />
-            </Suspense>
+            <RincianRealisasiTable data={rincianData} isLoading={rincianLoading} />
         </div>
     );
 }

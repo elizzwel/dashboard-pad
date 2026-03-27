@@ -1,14 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { ChevronRight, ChevronDown } from "lucide-react";
-import { padSummary } from "@/lib/data";
-import { formatCurrency, calcAchievement, calcVariance, formatCompact } from "@/lib/format";
+import { formatCurrency, formatCompact } from "@/lib/format";
 import { AchievementBadge } from "@/components/shared/achievement-badge";
 import { cn } from "@/lib/utils";
+import type { HeadMataAnggaran, DetailMataAnggaran, DetailMataAnggaranResponse } from "@/lib/types/pad";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export function DetailRealisasiTable() {
+interface DetailRealisasiTableProps {
+    data?: DetailMataAnggaranResponse;
+    isLoading?: boolean;
+}
+
+export function DetailRealisasiTable({ data, isLoading }: DetailRealisasiTableProps) {
     const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+    const [page, setPage] = useState(1);
+    const perPage = 5;
+
+    if (isLoading || !data) {
+        return <Skeleton className="h-[400px] rounded-xl" />;
+    }
+
+    const { head, detail } = data;
 
     const toggleRow = (id: string) => {
         setExpandedRows((prev) => {
@@ -23,7 +37,7 @@ export function DetailRealisasiTable() {
     };
 
     const expandAll = () => {
-        const allIds = new Set(padSummary.kelompok.map((k) => k.id));
+        const allIds = new Set(head.map((k) => k.kelompok_pad));
         setExpandedRows(allIds);
     };
 
@@ -31,18 +45,8 @@ export function DetailRealisasiTable() {
         setExpandedRows(new Set());
     };
 
-    const totalRealisasi = padSummary.kelompok.reduce(
-        (sum, k) => sum + k.children.reduce((s, c) => s + c.realisasi, 0),
-        0
-    );
-
-    const [page, setPage] = useState(1);
-    const perPage = 5;
-    const totalPages = Math.ceil(padSummary.kelompok.length / perPage);
-    const shownKelompok = padSummary.kelompok.slice(
-        (page - 1) * perPage,
-        page * perPage
-    );
+    const totalPages = Math.ceil(head.length / perPage);
+    const shownKelompok = head.slice((page - 1) * perPage, page * perPage);
 
     return (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
@@ -92,25 +96,19 @@ export function DetailRealisasiTable() {
                     </thead>
                     <tbody>
                         {shownKelompok.map((kelompok) => {
-                            const isExpanded = expandedRows.has(kelompok.id);
-                            const achievement = calcAchievement(
-                                kelompok.children.reduce((s, c) => s + c.realisasi, 0),
-                                kelompok.target
+                            const isExpanded = expandedRows.has(kelompok.kelompok_pad);
+                            const children = detail.filter(
+                                (d) => d.kelompok_pad === kelompok.kelompok_pad
                             );
-                            const variance = calcVariance(
-                                kelompok.children.reduce((s, c) => s + c.realisasi, 0),
-                                kelompok.target
-                            );
-                            const kontribusi = totalRealisasi > 0
-                                ? ((kelompok.children.reduce((s, c) => s + c.realisasi, 0) / totalRealisasi) * 100)
-                                : 0;
+                            const achievement = Number(kelompok.achievement);
+                            const variance = Number(kelompok.variance);
 
                             return (
-                                <Fragment key={kelompok.id}>
+                                <Fragment key={kelompok.kelompok_pad}>
                                     {/* Parent row */}
                                     <tr
                                         className="border-t border-gray-100 hover:bg-blue-50/30 cursor-pointer transition-colors"
-                                        onClick={() => toggleRow(kelompok.id)}
+                                        onClick={() => toggleRow(kelompok.kelompok_pad)}
                                     >
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2">
@@ -121,19 +119,19 @@ export function DetailRealisasiTable() {
                                                 )}
                                                 <div>
                                                     <span className="text-sm font-semibold text-brand-blue hover:underline">
-                                                        {kelompok.nama}
+                                                        {kelompok.kelompok_pad}
                                                     </span>
                                                     <span className="text-xs text-gray-400 ml-2">
-                                                        ({kelompok.jumlahMataAnggaran} mata anggaran)
+                                                        ({kelompok.jumlah_mata_anggaran} mata anggaran)
                                                     </span>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-4 py-4 text-right text-sm text-gray-600 font-mono">
-                                            {formatCurrency(kelompok.target)}
+                                            {formatCurrency(Number(kelompok.total_target))}
                                         </td>
                                         <td className="px-4 py-4 text-right text-sm text-gray-600 font-mono">
-                                            {formatCurrency(kelompok.children.reduce((s, c) => s + c.realisasi, 0))}
+                                            {formatCurrency(Number(kelompok.total_realisasi))}
                                         </td>
                                         <td className="px-4 py-4 text-center">
                                             <AchievementBadge value={achievement} />
@@ -145,37 +143,33 @@ export function DetailRealisasiTable() {
                                             {variance >= 0 ? "+" : ""}{formatCompact(variance)}
                                         </td>
                                         <td className="px-4 py-4 text-right text-sm text-gray-600">
-                                            {kontribusi.toFixed(2)}%
+                                            {Number(kelompok.kontribusi).toFixed(2)}%
                                         </td>
                                     </tr>
 
                                     {/* Child rows */}
                                     {isExpanded &&
-                                        kelompok.children.map((child) => {
-                                            const childAchievement = calcAchievement(child.realisasi, child.target);
-                                            const childVariance = calcVariance(child.realisasi, child.target);
-                                            const childKontribusi = totalRealisasi > 0
-                                                ? ((child.realisasi / totalRealisasi) * 100)
-                                                : 0;
+                                        children.map((child, idx) => {
+                                            const childVariance = Number(child.variance);
 
                                             return (
                                                 <tr
-                                                    key={child.id}
+                                                    key={`${kelompok.kelompok_pad}-${idx}`}
                                                     className="border-t border-gray-50 bg-gray-50/30 hover:bg-blue-50/20 transition-colors"
                                                 >
                                                     <td className="pl-14 pr-6 py-3 border-l-2 border-brand-blue">
                                                         <span className="text-sm text-gray-600">
-                                                            {child.nama}
+                                                            {child.mata_anggaran}
                                                         </span>
                                                     </td>
                                                     <td className="px-4 py-3 text-right text-sm text-gray-500 font-mono">
-                                                        {formatCurrency(child.target)}
+                                                        {formatCurrency(Number(child.target))}
                                                     </td>
                                                     <td className="px-4 py-3 text-right text-sm text-gray-500 font-mono">
-                                                        {formatCurrency(child.realisasi)}
+                                                        {formatCurrency(Number(child.realisasi))}
                                                     </td>
                                                     <td className="px-4 py-3 text-center">
-                                                        <AchievementBadge value={childAchievement} />
+                                                        <AchievementBadge value={Number(child.achievement)} />
                                                     </td>
                                                     <td className={cn(
                                                         "px-4 py-3 text-right text-sm font-mono",
@@ -184,7 +178,7 @@ export function DetailRealisasiTable() {
                                                         {childVariance >= 0 ? "+" : ""}{formatCompact(childVariance)}
                                                     </td>
                                                     <td className="px-4 py-3 text-right text-sm text-gray-500">
-                                                        {childKontribusi.toFixed(2)}%
+                                                        {Number(child.kontribusi_per_kelompok).toFixed(2)}%
                                                     </td>
                                                 </tr>
                                             );
@@ -199,7 +193,7 @@ export function DetailRealisasiTable() {
             {/* Pagination */}
             <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100">
                 <p className="text-xs text-gray-500">
-                    Menampilkan {shownKelompok.length} dari {padSummary.kelompok.length} Sektor
+                    Menampilkan {shownKelompok.length} dari {head.length} Kelompok
                 </p>
                 <div className="flex items-center gap-1">
                     <button
@@ -233,6 +227,3 @@ export function DetailRealisasiTable() {
         </div>
     );
 }
-
-// Need to add Fragment import
-import { Fragment } from "react";
