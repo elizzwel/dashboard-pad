@@ -34,8 +34,14 @@ export function LoginForm() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       await login(data.username, data.password);
-      const from = searchParams.get("from") ?? "/dashboard";
-      // Gunakan hard navigation agar cookie terbaca ulang oleh middleware
+      const rawFrom = searchParams.get("from") ?? "/dashboard";
+      // Jika from adalah root "/" atau "/login", arahkan ke dashboard
+      // (root page selalu redirect ke /login sehingga akan loop)
+      const from =
+        !rawFrom || rawFrom === "/" || rawFrom.startsWith("/login")
+          ? "/dashboard"
+          : rawFrom;
+      // Gunakan hard navigation agar cookie terbaca ulang oleh proxy
       window.location.href = from;
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Kredensial tidak valid");
