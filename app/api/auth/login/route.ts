@@ -15,16 +15,18 @@ type UserRow = {
   is_active: boolean;
 };
 
-// Pisahkan secure flag dari NODE_ENV agar bisa dikontrol via env
-// Di VM Ubuntu tanpa HTTPS, set COOKIE_SECURE=false di .env
-const isSecureCookie = process.env.COOKIE_SECURE !== "false" && process.env.NODE_ENV === "production";
-
-const cookieBase = {
-  httpOnly: true,
-  secure: isSecureCookie,
-  sameSite: "lax" as const,
-  path: "/",
-};
+// Tentukan secure flag dari protokol request secara runtime
+// → secure=true jika HTTPS, false jika HTTP (VM tanpa SSL)
+function buildCookieBase(req: NextRequest) {
+  const proto = req.headers.get("x-forwarded-proto") ?? "http";
+  const isHttps = proto === "https" || req.url.startsWith("https://");
+  return {
+    httpOnly: true,
+    secure: isHttps,
+    sameSite: "lax" as const,
+    path: "/",
+  };
+}
 
 const RATE_LIMIT = 5;
 const RATE_WINDOW_MINUTES = 15;
@@ -119,6 +121,8 @@ export async function POST(req: NextRequest) {
     action: "LOGIN",
     ip_address: ip,
   } as never);
+
+  const cookieBase = buildCookieBase(req);
 
   const response = NextResponse.json({
     user: {

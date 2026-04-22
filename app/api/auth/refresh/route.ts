@@ -8,12 +8,16 @@ import type { Role } from "@/lib/auth/roles";
 type RefreshTokenRow = { id: number; is_revoked: boolean };
 type UserRow = { id: string; username: string; nama: string; role: string; is_active: boolean };
 
-const cookieBase = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax" as const,
-  path: "/",
-};
+function buildCookieBase(req: NextRequest) {
+  const proto = req.headers.get("x-forwarded-proto") ?? "http";
+  const isHttps = proto === "https" || req.url.startsWith("https://");
+  return {
+    httpOnly: true,
+    secure: isHttps,
+    sameSite: "lax" as const,
+    path: "/",
+  };
+}
 
 export async function POST(req: NextRequest) {
   const db = createServerClient();
@@ -85,6 +89,7 @@ export async function POST(req: NextRequest) {
     user_agent: req.headers.get("user-agent"),
   } as never);
 
+  const cookieBase = buildCookieBase(req);
   const response = NextResponse.json({ success: true });
   response.cookies.set("access_token", newAccessToken, {
     ...cookieBase,
