@@ -15,9 +15,13 @@ type UserRow = {
   is_active: boolean;
 };
 
+// Pisahkan secure flag dari NODE_ENV agar bisa dikontrol via env
+// Di VM Ubuntu tanpa HTTPS, set COOKIE_SECURE=false di .env
+const isSecureCookie = process.env.COOKIE_SECURE !== "false" && process.env.NODE_ENV === "production";
+
 const cookieBase = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
+  secure: isSecureCookie,
   sameSite: "lax" as const,
   path: "/",
 };

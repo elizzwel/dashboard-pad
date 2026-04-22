@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +20,6 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAuthStore();
 
@@ -36,8 +35,8 @@ export function LoginForm() {
     try {
       await login(data.username, data.password);
       const from = searchParams.get("from") ?? "/dashboard";
-      router.push(from);
-      router.refresh();
+      // Gunakan hard navigation agar cookie terbaca ulang oleh middleware
+      window.location.href = from;
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Kredensial tidak valid");
     }
