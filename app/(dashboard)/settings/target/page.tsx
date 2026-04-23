@@ -181,7 +181,7 @@ export default function SettingsTargetPage() {
                         <p className="text-blue-200/80 text-xs sm:text-sm mb-2">Setting › Tambah Target</p>
                         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">Nilai Anggaran</h1>
                         <p className="text-blue-200/70 text-xs sm:text-sm max-w-lg">
-                            Kelola nilai anggaran target per tahun secara efisien dan transparan untuk Kabupaten Klaten.
+                            Kelola nilai anggaran target per tahun secara efisien dan transparan.
                         </p>
                     </div>
                     <div className="shrink-0">

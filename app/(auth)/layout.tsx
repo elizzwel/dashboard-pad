@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "Login — Dashboard PAD Kabupaten Klaten",
+  title: "Login — Dashboard PAD Daerah",
 };
 
 export default function AuthLayout({
@@ -21,7 +21,7 @@ export default function AuthLayout({
         <div className="relative z-10 flex flex-col items-center text-center max-w-md">
             <Image
               src="/pict.png"
-              alt="Logo Klaten"
+              alt="Logo"
               width={80}
               height={80}
               className="h-24 w-auto object-contain mb-8 drop-shadow-2xl"
@@ -31,7 +31,7 @@ export default function AuthLayout({
                Dashboard PAD
             </h1>
             <p className="text-lg text-blue-100/90 leading-relaxed">
-               Sistem Monitoring Realisasi Pendapatan Asli Daerah Kabupaten Klaten
+               Sistem Monitoring Realisasi Pendapatan Asli Daerah
             </p>
         </div>
       </div>

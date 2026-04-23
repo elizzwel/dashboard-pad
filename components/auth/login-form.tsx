@@ -54,7 +54,7 @@ export function LoginForm() {
       <div className="flex flex-col items-center gap-4 mb-8 lg:hidden">
         <Image
           src="/pict.png"
-          alt="Logo Klaten"
+          alt="Logo"
           width={80}
           height={80}
           className="h-24 w-auto object-contain drop-shadow-md"
@@ -62,7 +62,7 @@ export function LoginForm() {
         />
         <div className="text-center">
           <h1 className="text-2xl font-extrabold text-brand-navy tracking-tight">Dashboard PAD</h1>
-          <p className="text-sm text-gray-500 font-medium mt-1">Kabupaten Klaten</p>
+          <p className="text-sm text-gray-500 font-medium mt-1">Daerah</p>
         </div>
       </div>
 

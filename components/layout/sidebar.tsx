@@ -64,7 +64,7 @@ export function Sidebar() {
             >
                 <Image
                     src="/pict.png"
-                    alt="Logo Kabupaten Klaten"
+                    alt="Logo Daerah"
                     width={sidebarCollapsed ? 40 : 60}
                     height={sidebarCollapsed ? 40 : 60}
                     className="rounded-full shrink-0 transition-all duration-300"
@@ -73,10 +73,10 @@ export function Sidebar() {
                 {!sidebarCollapsed && (
                     <div className="overflow-hidden">
                         <h1 className="font-bold text-base leading-tight whitespace-nowrap">
-                            PAD Klaten
+                            PAD
                         </h1>
                         <p className="text-xs text-[#475569] whitespace-nowrap">
-                            Kabupaten Klaten
+                            Daerah
                         </p>
                     </div>
                 )}
@@ -137,7 +137,7 @@ export function Sidebar() {
                 )}
             >
                 {!sidebarCollapsed && (
-                    <p className="text-xs text-gray-300">© 2024 PAD Klaten</p>
+                    <p className="text-xs text-gray-300">© 2024 PAD Daerah</p>
                 )}
             </div>
         </aside>
@@ -168,7 +168,7 @@ export function Sidebar() {
                     <div className="flex items-center gap-3">
                         <Image
                             src="/pict.png"
-                            alt="Logo Kabupaten Klaten"
+                            alt="Logo Daerah"
                             width={44}
                             height={44}
                             className="rounded-full"
@@ -176,10 +176,10 @@ export function Sidebar() {
                         />
                         <div>
                             <h1 className="font-bold text-base leading-tight">
-                                PAD Klaten
+                                PAD Daerah
                             </h1>
                             <p className="text-xs text-[#475569]">
-                                Kabupaten Klaten
+                                Daerah
                             </p>
                         </div>
                     </div>
@@ -216,7 +216,7 @@ export function Sidebar() {
                 </nav>
 
                 <div className="px-6 py-4 border-t border-gray-100">
-                    <p className="text-xs text-gray-300">© 2024 PAD Klaten</p>
+                    <p className="text-xs text-gray-300">© 2024 PAD Daerah</p>
                 </div>
             </aside>
         </>

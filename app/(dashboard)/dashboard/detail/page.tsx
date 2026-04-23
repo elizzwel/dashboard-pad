@@ -27,8 +27,8 @@ export default function DashboardDetailPage() {
             {/* Hero */}
             <HeroBanner
                 breadcrumb="Dashboard › Detail"
-                title="Dashboard PAD Kabupaten Klaten"
-                subtitle="Pantau realisasi Pendapatan Asli Daerah (PAD) secara real-time untuk mendukung pembangunan Klaten yang lebih mandiri."
+                title="Dashboard PAD Daerah"
+                subtitle="Pantau realisasi Pendapatan Asli Daerah (PAD) secara real-time untuk mendukung pembangunan yang lebih mandiri."
             />
 
             {/* View Toggle */}

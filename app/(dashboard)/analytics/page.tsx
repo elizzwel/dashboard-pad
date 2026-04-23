@@ -64,8 +64,8 @@ export default function AnalyticsPage() {
             {/* Hero */}
             <HeroBanner
                 breadcrumb="Dashboard › Analisa Data"
-                title="Dashboard PAD Kabupaten Klaten"
-                subtitle="Pantau realisasi Pendapatan Asli Daerah (PAD) secara real-time untuk mendukung pembangunan Klaten yang lebih mandiri."
+                title="Dashboard PAD Daerah"
+                subtitle="Pantau realisasi Pendapatan Asli Daerah (PAD) secara real-time untuk mendukung pembangunan yang lebih mandiri."
             />
 
             {/* KPI Row - 6 cards */}

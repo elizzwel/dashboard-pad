@@ -11,9 +11,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Dashboard PAD Kabupaten Klaten",
+  title: "Dashboard PAD Daerah",
   description:
-    "Real-time monitoring realisasi Pendapatan Asli Daerah (PAD) Kabupaten Klaten",
+    "Real-time monitoring realisasi Pendapatan Asli Daerah (PAD) Daerah",
 };
 
 export default function RootLayout({
